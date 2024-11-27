@@ -276,17 +276,11 @@
         const modal = document.getElementById('popupModal');
         const closeModal = document.getElementById('closeModal');
 		
-		const modalhistory = document.getElementById('historyModal');
-		const Historyclose = document.getElementById('closeHistory');
-		
         // Show modal on page load
         window.addEventListener('load', () => {
             modal.classList.add('show');
         });
 		
-		Historyclose.addEventListener('click', () => {
-            modalhistory.classList.remove('show');
-        });
 		
         // Close modal when close button is clicked
         closeModal.addEventListener('click', () => {
@@ -314,7 +308,7 @@
         }
 
         function closeHistoryModal() {
-            modalhistory.classList.remove('show');
+            modalhistory.classList.remove('hidden');
         }
 	</script>
 </body>
