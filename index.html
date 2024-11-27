@@ -116,7 +116,88 @@
   
 }
 
+        /* Modal styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.3s, opacity 0.3s;
+        }
+        .modal.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+            position: relative;
+        }
+        .modal-content h2 {
+            margin: 0 0 10px;
+        }
+        .modal-content p {
+            margin: 10px 0;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #666;
+        }
+        .close-btn:hover {
+            color: #000;
+        }
+		
+		.btn {
+            display: inline-block;
+            padding: 10px 12px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745; /* Warna hijau */
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
+        .btn:hover {
+            background-color: #218838; /* Warna hijau lebih gelap */
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            background-color: #1e7e34; /* Warna hijau saat ditekan */
+            transform: translateY(0);
+        }
+
+        .btn-container {
+            margin: 20px 0;
+        }
+		
+		/* Modal image styling */
+		.modal-image {
+			max-width: 100%; /* Fit within modal width */
+			max-height: 100%; /* Fit within modal height */
+			border-radius: 8px; /* Optional: rounded corners */
+			object-fit: contain; /* Maintain aspect ratio */
+		}
    #effetsalju {
       position: fixed;
       top: 0;
@@ -138,6 +219,14 @@
   </style>
 </head>
 <body>
+<!-- Popup Modal -->
+    <div id="popupModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal">&times;</button>
+            <h2>Selamat datang di TOPUPSKUY</h2>
+            <p>Kami berusaha memberikan produk terbaik dengan harga termurah untuk anda.</p>
+        </div>
+    </div>
   <div id="effetsalju"></div>
   <main>
     <div class="container shadow">
