@@ -11,13 +11,15 @@
 
   <style>
     :root {
-      --green-main: #00c853;
-      --green-dark: #047a3c;
+      --green-main: #00d45a;
+      --green-dark: #035f33;
+      --green-deep: #042417;
       --green-soft: #eafff1;
-      --green-light: #b9ffd3;
-      --text-dark: #123322;
+      --mint: #70ffb0;
+      --gold: #ffd76a;
       --white: #ffffff;
-      --black: #0b0b0b;
+      --dark: #07140d;
+      --muted: #547060;
     }
 
     * {
@@ -29,7 +31,7 @@
       margin: 0;
       width: 100%;
       height: 100%;
-      background: #0b0b0b;
+      background: #050806;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
       overflow: hidden;
     }
@@ -47,7 +49,7 @@
       flex-direction: column;
       gap: 2px;
       z-index: 1;
-      background: #0b0b0b;
+      background: #050806;
     }
 
     #mainFrameTop,
@@ -103,12 +105,13 @@
       z-index: 5000;
       display: grid;
       place-items: center;
-      padding: 22px;
+      padding: 20px;
+      overflow: hidden;
       background:
-        radial-gradient(circle at 20% 20%, rgba(0, 255, 123, 0.25), transparent 28%),
-        radial-gradient(circle at 80% 15%, rgba(185, 255, 211, 0.35), transparent 26%),
-        radial-gradient(circle at 50% 100%, rgba(0, 200, 83, 0.28), transparent 35%),
-        linear-gradient(145deg, #eafff1 0%, #ffffff 42%, #d9ffe7 100%);
+        radial-gradient(circle at 15% 14%, rgba(0, 255, 136, 0.28), transparent 26%),
+        radial-gradient(circle at 86% 18%, rgba(255, 215, 106, 0.22), transparent 24%),
+        radial-gradient(circle at 50% 110%, rgba(0, 212, 90, 0.32), transparent 34%),
+        linear-gradient(145deg, #04150c 0%, #062818 44%, #021108 100%);
       transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.35s ease;
     }
 
@@ -116,20 +119,56 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
-      transform: scale(1.02);
+      transform: scale(1.025);
+    }
+
+    .store-bg-orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(2px);
+      opacity: 0.72;
+      pointer-events: none;
+      animation: orbFloat 7s ease-in-out infinite;
+    }
+
+    .orb-1 {
+      width: 120px;
+      height: 120px;
+      top: 8%;
+      left: 8%;
+      background: rgba(0, 255, 136, 0.16);
+    }
+
+    .orb-2 {
+      width: 92px;
+      height: 92px;
+      right: 10%;
+      top: 12%;
+      background: rgba(255, 215, 106, 0.14);
+      animation-delay: 0.7s;
+    }
+
+    .orb-3 {
+      width: 150px;
+      height: 150px;
+      bottom: 7%;
+      right: 16%;
+      background: rgba(0, 212, 90, 0.13);
+      animation-delay: 1.2s;
     }
 
     .reminder-card {
       position: relative;
-      width: min(440px, 100%);
-      padding: 26px 22px 24px;
-      border-radius: 30px;
+      width: min(470px, 100%);
+      padding: 22px 20px 20px;
+      border-radius: 34px;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(237,255,244,0.98));
-      border: 1px solid rgba(0, 200, 83, 0.28);
+        linear-gradient(180deg, rgba(255,255,255,0.98), rgba(235,255,243,0.96));
+      border: 1px solid rgba(112, 255, 176, 0.34);
       box-shadow:
-        0 24px 70px rgba(0, 90, 42, 0.22),
-        inset 0 1px 0 rgba(255,255,255,0.8);
+        0 26px 80px rgba(0, 0, 0, 0.36),
+        0 0 0 1px rgba(255,255,255,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.9);
       overflow: hidden;
       animation: cardPop 0.55s cubic-bezier(.2,.9,.2,1) both;
     }
@@ -139,80 +178,240 @@
       position: absolute;
       inset: -2px;
       background:
-        radial-gradient(circle at 15% 15%, rgba(0, 200, 83, 0.18), transparent 23%),
-        radial-gradient(circle at 90% 10%, rgba(0, 255, 123, 0.16), transparent 24%),
-        radial-gradient(circle at 50% 110%, rgba(0, 200, 83, 0.16), transparent 30%);
+        radial-gradient(circle at 16% 10%, rgba(0, 212, 90, 0.14), transparent 25%),
+        radial-gradient(circle at 92% 12%, rgba(255, 215, 106, 0.15), transparent 24%),
+        radial-gradient(circle at 50% 110%, rgba(0, 212, 90, 0.12), transparent 32%);
       pointer-events: none;
     }
 
-    .reminder-card::after {
-      content: "";
-      position: absolute;
-      top: -70px;
-      left: -90px;
-      width: 180px;
-      height: 180px;
-      border-radius: 999px;
-      background: rgba(0, 200, 83, 0.12);
-      animation: floatBubble 5s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    .cute-badge {
+    .premium-topbar {
       position: relative;
       z-index: 1;
-      width: 76px;
-      height: 76px;
-      margin: 0 auto 14px;
-      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .brand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 11px;
+      border-radius: 999px;
+      color: #07572d;
+      background: rgba(0, 212, 90, 0.11);
+      border: 1px solid rgba(0, 200, 83, 0.20);
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.55px;
+      white-space: nowrap;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: #00d45a;
+      box-shadow: 0 0 0 5px rgba(0, 212, 90, 0.13);
+    }
+
+    .secure-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #644d08;
+      background: rgba(255, 215, 106, 0.20);
+      border: 1px solid rgba(255, 215, 106, 0.42);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .hero-icon-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 4px 0 11px;
+    }
+
+    .premium-badge {
+      position: relative;
+      width: 82px;
+      height: 82px;
+      border-radius: 29px;
       display: grid;
       place-items: center;
       background:
-        linear-gradient(145deg, #00e676, #00b84f);
+        linear-gradient(145deg, #00f078 0%, #00c853 54%, #01863d 100%);
       color: #ffffff;
-      font-size: 36px;
       box-shadow:
-        0 14px 30px rgba(0, 200, 83, 0.35),
-        inset 0 1px 0 rgba(255,255,255,0.35);
+        0 16px 34px rgba(0, 200, 83, 0.42),
+        0 0 0 9px rgba(0, 212, 90, 0.11),
+        inset 0 1px 0 rgba(255,255,255,0.45);
       animation: softBounce 2.4s ease-in-out infinite;
     }
 
-    .cute-badge span {
-      display: block;
-      transform: translateY(-1px);
+    .premium-badge span {
+      font-size: 37px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+    }
+
+    .spark {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(255, 215, 106, 0.92);
+      display: grid;
+      place-items: center;
+      color: #5a4100;
+      font-size: 10px;
+      font-weight: 900;
+      box-shadow: 0 8px 18px rgba(255, 215, 106, 0.38);
+      animation: sparkle 2.8s ease-in-out infinite;
+    }
+
+    .spark-1 {
+      top: -3px;
+      right: -3px;
+    }
+
+    .spark-2 {
+      left: -6px;
+      bottom: 9px;
+      animation-delay: 0.8s;
     }
 
     .reminder-title {
       position: relative;
       z-index: 1;
       margin: 0;
-      color: var(--text-dark);
+      color: #0d2d1d;
       font-size: 25px;
       line-height: 1.12;
       text-align: center;
-      font-weight: 900;
-      letter-spacing: -0.5px;
+      font-weight: 950;
+      letter-spacing: -0.6px;
     }
 
     .reminder-subtitle {
       position: relative;
       z-index: 1;
-      margin: 8px 0 18px;
-      color: #0c6d38;
+      margin: 9px auto 16px;
+      max-width: 360px;
+      color: #227045;
       text-align: center;
-      font-size: 16px;
-      line-height: 1.45;
-      font-weight: 800;
+      font-size: 14.5px;
+      line-height: 1.48;
+      font-weight: 750;
+    }
+
+    .app-showcase {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin: 15px 0;
+    }
+
+    .app-chip {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 9px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(0, 200, 83, 0.15);
+      box-shadow:
+        0 10px 22px rgba(8, 63, 35, 0.08),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      animation: chipFloat 4.8s ease-in-out infinite;
+    }
+
+    .app-chip:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .app-chip:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    .app-chip:nth-child(4) {
+      animation-delay: 0.9s;
+    }
+
+    .app-chip:nth-child(5) {
+      animation-delay: 1.2s;
+    }
+
+    .app-chip:nth-child(6) {
+      animation-delay: 1.5s;
+    }
+
+    .app-icon {
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(145deg, #00d45a, #047a3c);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 950;
+      box-shadow: 0 8px 14px rgba(0,0,0,0.10);
+    }
+
+    .app-icon img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .app-name {
+      min-width: 0;
+      display: block;
+      color: #173d28;
+      font-size: 12px;
+      line-height: 1.1;
+      font-weight: 900;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .app-type {
+      display: block;
+      margin-top: 2px;
+      color: #5a7c68;
+      font-size: 10px;
+      line-height: 1.1;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .reminder-box {
       position: relative;
       z-index: 1;
-      padding: 16px;
-      border-radius: 22px;
-      background: rgba(234, 255, 241, 0.9);
+      padding: 15px 14px;
+      border-radius: 24px;
+      background:
+        linear-gradient(180deg, rgba(234, 255, 241, 0.94), rgba(255,255,255,0.9));
       border: 1px solid rgba(0, 200, 83, 0.20);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
     }
 
     .reminder-main {
@@ -221,13 +420,13 @@
       font-size: 19px;
       line-height: 1.35;
       text-align: center;
-      font-weight: 900;
+      font-weight: 950;
     }
 
     .reminder-note {
-      margin: 10px 0 0;
+      margin: 9px 0 0;
       color: #315845;
-      font-size: 14px;
+      font-size: 13.5px;
       line-height: 1.55;
       text-align: center;
       font-weight: 650;
@@ -235,27 +434,28 @@
 
     .reminder-note strong {
       color: #008b42;
-      font-weight: 900;
+      font-weight: 950;
     }
 
     #startBtn {
       position: relative;
       z-index: 1;
       width: 100%;
-      margin-top: 18px;
+      margin-top: 16px;
       border: none;
       outline: none;
       cursor: pointer;
       border-radius: 999px;
       padding: 15px 18px;
       background:
-        linear-gradient(135deg, #00e676 0%, #00c853 45%, #00a344 100%);
+        linear-gradient(135deg, #00ef78 0%, #00c853 46%, #009943 100%);
       color: #ffffff;
       font-size: 16px;
-      font-weight: 900;
+      font-weight: 950;
       letter-spacing: 0.1px;
       box-shadow:
-        0 14px 28px rgba(0, 200, 83, 0.32),
+        0 15px 30px rgba(0, 200, 83, 0.34),
+        0 0 0 0 rgba(0, 200, 83, 0.18),
         inset 0 1px 0 rgba(255,255,255,0.35);
       transition:
         transform 0.18s ease,
@@ -268,7 +468,7 @@
       transform: translateY(-2px);
       filter: brightness(1.04);
       box-shadow:
-        0 18px 34px rgba(0, 200, 83, 0.40),
+        0 19px 36px rgba(0, 200, 83, 0.42),
         inset 0 1px 0 rgba(255,255,255,0.35);
     }
 
@@ -279,44 +479,12 @@
     .mini-text {
       position: relative;
       z-index: 1;
-      margin: 11px 0 0;
+      margin: 10px 0 0;
       text-align: center;
-      color: #5d7d6b;
+      color: #5e806d;
       font-size: 12px;
       line-height: 1.4;
-      font-weight: 600;
-    }
-
-    .floating-dot {
-      position: absolute;
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: rgba(0, 200, 83, 0.32);
-      animation: floatDot 4s ease-in-out infinite;
-      pointer-events: none;
-    }
-
-    .dot-1 {
-      top: 22px;
-      right: 34px;
-      animation-delay: 0.2s;
-    }
-
-    .dot-2 {
-      bottom: 82px;
-      left: 26px;
-      width: 12px;
-      height: 12px;
-      animation-delay: 0.7s;
-    }
-
-    .dot-3 {
-      bottom: 28px;
-      right: 48px;
-      width: 7px;
-      height: 7px;
-      animation-delay: 1.1s;
+      font-weight: 650;
     }
 
     @keyframes cardPop {
@@ -339,52 +507,78 @@
       }
     }
 
+    @keyframes sparkle {
+      0%, 100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 0.9;
+      }
+      50% {
+        transform: scale(1.18) rotate(12deg);
+        opacity: 1;
+      }
+    }
+
+    @keyframes chipFloat {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-3px);
+      }
+    }
+
+    @keyframes orbFloat {
+      0%, 100% {
+        transform: translate(0, 0) scale(1);
+      }
+      50% {
+        transform: translate(12px, -10px) scale(1.06);
+      }
+    }
+
     @keyframes pulseBtn {
       0%, 100% {
         box-shadow:
-          0 14px 28px rgba(0, 200, 83, 0.32),
+          0 15px 30px rgba(0, 200, 83, 0.34),
           0 0 0 0 rgba(0, 200, 83, 0.18),
           inset 0 1px 0 rgba(255,255,255,0.35);
       }
       50% {
         box-shadow:
-          0 14px 28px rgba(0, 200, 83, 0.32),
+          0 15px 30px rgba(0, 200, 83, 0.34),
           0 0 0 8px rgba(0, 200, 83, 0),
           inset 0 1px 0 rgba(255,255,255,0.35);
       }
     }
 
-    @keyframes floatBubble {
-      0%, 100% {
-        transform: translate(0, 0);
-      }
-      50% {
-        transform: translate(14px, 18px);
-      }
-    }
-
-    @keyframes floatDot {
-      0%, 100% {
-        transform: translateY(0);
-        opacity: 0.65;
-      }
-      50% {
-        transform: translateY(-12px);
-        opacity: 1;
-      }
-    }
-
     @media (max-width: 480px) {
-      .reminder-card {
-        padding: 24px 18px 22px;
-        border-radius: 27px;
+      #startReminder {
+        padding: 14px;
       }
 
-      .cute-badge {
-        width: 70px;
-        height: 70px;
-        border-radius: 24px;
-        font-size: 33px;
+      .reminder-card {
+        padding: 18px 15px 17px;
+        border-radius: 30px;
+      }
+
+      .premium-topbar {
+        margin-bottom: 11px;
+      }
+
+      .brand-pill,
+      .secure-pill {
+        padding: 7px 8px;
+        font-size: 10px;
+      }
+
+      .premium-badge {
+        width: 74px;
+        height: 74px;
+        border-radius: 26px;
+      }
+
+      .premium-badge span {
+        font-size: 34px;
       }
 
       .reminder-title {
@@ -392,7 +586,24 @@
       }
 
       .reminder-subtitle {
-        font-size: 15px;
+        font-size: 13.5px;
+      }
+
+      .app-showcase {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        margin: 13px 0;
+      }
+
+      .app-chip {
+        padding: 8px;
+        border-radius: 16px;
+      }
+
+      .app-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 9px;
       }
 
       .reminder-main {
@@ -400,7 +611,19 @@
       }
 
       .reminder-note {
-        font-size: 13.5px;
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 340px) {
+      .premium-topbar {
+        flex-direction: column;
+      }
+
+      .brand-pill,
+      .secure-pill {
+        width: 100%;
+        justify-content: center;
       }
     }
 
@@ -421,35 +644,54 @@
   <canvas id="pileCanvas"></canvas>
   <canvas id="fxCanvas"></canvas>
 
-  <!-- MAIN IFRAMES: src sengaja kosong dulu -->
+  <!-- MAIN IFRAMES: src kosong dulu sampai user klik tombol -->
   <div id="mainWrap">
     <iframe id="mainFrameTop" title="Main Frame Top"></iframe>
     <iframe id="mainFrameBottom" title="Main Frame Bottom"></iframe>
   </div>
 
-  <!-- POPUP PAYMENT: src sengaja kosong dulu -->
+  <!-- POPUP PAYMENT: src kosong dulu sampai user klik tombol -->
   <div id="popupWrap">
     <iframe id="popupFrame" title="TOPUPSKUY Store"></iframe>
   </div>
 
   <!-- POPUP REMINDER AWAL -->
   <div id="startReminder" role="dialog" aria-modal="true" aria-labelledby="reminderTitle">
-    <div class="reminder-card">
-      <span class="floating-dot dot-1"></span>
-      <span class="floating-dot dot-2"></span>
-      <span class="floating-dot dot-3"></span>
+    <span class="store-bg-orb orb-1"></span>
+    <span class="store-bg-orb orb-2"></span>
+    <span class="store-bg-orb orb-3"></span>
 
-      <div class="cute-badge" aria-hidden="true">
-        <span>📗</span>
+    <div class="reminder-card">
+      <div class="premium-topbar">
+        <div class="brand-pill">
+          <span class="brand-dot"></span>
+          TOPUPSKUY STORE
+        </div>
+
+        <div class="secure-pill">
+          🔐 Digital Premium
+        </div>
+      </div>
+
+      <div class="hero-icon-row">
+        <div class="premium-badge" aria-hidden="true">
+          <span>💎</span>
+          <i class="spark spark-1">✦</i>
+          <i class="spark spark-2">✦</i>
+        </div>
       </div>
 
       <h1 class="reminder-title" id="reminderTitle">
-        Membeli disini harus wajib baca!
+        Sebelum checkout, baca dulu ya!
       </h1>
 
       <p class="reminder-subtitle">
-        Malas baca? Jangan beli disini 🙏
+        Biar order aman, cepat, dan tidak salah paham. Produk digital punya aturan masing-masing.
       </p>
+
+      <div class="app-showcase" id="appShowcase" aria-label="Contoh aplikasi premium">
+        <!-- App chips dibuat otomatis dari JavaScript -->
+      </div>
 
       <div class="reminder-box">
         <p class="reminder-main">
@@ -463,7 +705,7 @@
       </div>
 
       <button id="startBtn" type="button">
-        Saya mengerti!
+        Saya paham, lanjut ke Store
       </button>
 
       <p class="mini-text">
@@ -484,10 +726,60 @@ const STORE_URL = "https://topupskuy.store";
 
 /*
   Refresh acak dalam rentang 40-60 detik.
-  Nilai dalam milidetik.
+  Top dan bottom punya timer sendiri-sendiri.
 */
 const REFRESH_MIN = 40000;
 const REFRESH_MAX = 60000;
+
+/*
+  Database icon app.
+  Sebagian icon memakai CDN Play Store: play-lh.googleusercontent.com.
+  Kalau icon gagal load, sistem otomatis pakai fallback initial.
+*/
+const appDatabase = [
+  {
+    name: "Canva",
+    type: "Design Pro",
+    fallback: "C",
+    icon: "https://play-lh.googleusercontent.com/tUZNUbnNGw8I6uLg8Zy2ZWbmSFuT5kK0dYA8tdqNmldlozNS_jSjDw5j2nElRsoTzQ=w120-h120-rw",
+    play: "https://play.google.com/store/apps/details?id=com.canva.editor"
+  },
+  {
+    name: "Netflix",
+    type: "Streaming",
+    fallback: "N",
+    icon: "https://play-lh.googleusercontent.com/TBRwjS_qfJCSj1m7zZB93FnpJM5fSpMA_wUlFDLxWAb45T9RmwBvQd5cWR5viJJOhkI=w120-h120-rw",
+    play: "https://play.google.com/store/apps/details?id=com.netflix.mediaclient"
+  },
+  {
+    name: "CapCut",
+    type: "Editing Pro",
+    fallback: "CC",
+    icon: "https://play-lh.googleusercontent.com/M78HyakHaxKrjoeqYx41E9DXfVYYtx67nvc7Ks4G4zFQeaAJdGCi8gzzGSrHIwlrmnJS6zD9S4fAXqdEwfuHQAQ=w120-h120-rw",
+    play: "https://play.google.com/store/apps/details?id=com.lemon.lvoverseas"
+  },
+  {
+    name: "Spotify",
+    type: "Music",
+    fallback: "S",
+    icon: "https://play-lh.googleusercontent.com/7ynvVIRdhJNAngCg_GI7i8TtH8BqkJYmffeUHsG-mJOdzt1XLvGmbsKuc5Q1SInBjDKN=w120-h120-rw",
+    play: "https://play.google.com/store/apps/details?id=com.spotify.music"
+  },
+  {
+    name: "ChatGPT",
+    type: "AI Premium",
+    fallback: "AI",
+    icon: "https://play-lh.googleusercontent.com/lmG9HlI0awHie0cyBieWXeNjpyXvHPwDBb8MNOVIyp0P8VEh95AiBHtUZSDVR3HLe3A=w120-h120-rw",
+    play: "https://play.google.com/store/apps/details?id=com.openai.chatgpt"
+  },
+  {
+    name: "Viu",
+    type: "Drama & Film",
+    fallback: "V",
+    icon: "",
+    play: "https://play.google.com/store/search?q=viu&c=apps"
+  }
+];
 
 /* ================= ELEMENTS ================= */
 
@@ -497,12 +789,53 @@ const popupWrap = document.getElementById("popupWrap");
 const popupFrame = document.getElementById("popupFrame");
 const startReminder = document.getElementById("startReminder");
 const startBtn = document.getElementById("startBtn");
+const appShowcase = document.getElementById("appShowcase");
 
 let hasStarted = false;
 let topIndex = 0;
 let bottomIndex = 1;
 let topTimer = null;
 let bottomTimer = null;
+
+/* ================= APP CHIPS ================= */
+
+function renderAppChips() {
+  if (!appShowcase) return;
+
+  appShowcase.innerHTML = appDatabase.map((app) => {
+    const safeName = escapeHtml(app.name);
+    const safeType = escapeHtml(app.type);
+    const safeFallback = escapeHtml(app.fallback);
+    const safeIcon = escapeAttr(app.icon || "");
+
+    const iconHtml = safeIcon
+      ? `<img src="${safeIcon}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove(); this.parentElement.textContent='${safeFallback}';">`
+      : safeFallback;
+
+    return `
+      <div class="app-chip" title="${safeName}">
+        <div class="app-icon">${iconHtml}</div>
+        <div>
+          <span class="app-name">${safeName}</span>
+          <span class="app-type">${safeType}</span>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value);
+}
 
 /* ================= HELPERS ================= */
 
@@ -574,10 +907,6 @@ function startAllFrames() {
 
 startBtn.addEventListener("click", startAllFrames);
 
-/*
-  Optional:
-  Supaya tombol bisa dipicu dengan Enter/Space saat fokus.
-*/
 startBtn.addEventListener("keydown", function(event) {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
@@ -585,7 +914,7 @@ startBtn.addEventListener("keydown", function(event) {
   }
 });
 
-/* ================= LIGHT SNOW FX ================= */
+/* ================= LIGHT SNOW / SPARKLE FX ================= */
 
 function startSnowFX() {
   const fx = document.getElementById("fxCanvas");
@@ -600,15 +929,15 @@ function startSnowFX() {
     fx.height = pile.height = window.innerHeight;
 
     const isMobile = window.innerWidth <= 600;
-    const amount = isMobile ? 55 : 95;
+    const amount = isMobile ? 45 : 80;
 
     flakes = Array.from({ length: amount }, () => ({
       x: Math.random() * fx.width,
       y: Math.random() * fx.height,
-      r: Math.random() * 1.8 + 0.8,
-      vy: Math.random() * 0.45 + 0.18,
-      vx: Math.random() * 0.25 - 0.125,
-      alpha: Math.random() * 0.45 + 0.35
+      r: Math.random() * 1.7 + 0.7,
+      vy: Math.random() * 0.42 + 0.16,
+      vx: Math.random() * 0.24 - 0.12,
+      alpha: Math.random() * 0.38 + 0.24
     }));
   }
 
@@ -658,9 +987,12 @@ function startSnowFX() {
 
 window.addEventListener("load", () => {
   /*
-    Saat halaman load, hanya efek visual yang aktif.
-    Iframe utama dan iframe popup tetap kosong sampai user klik tombol.
+    Saat halaman load:
+    - Iframe utama belum load.
+    - Iframe popup store belum load.
+    - Yang aktif hanya popup reminder dan efek visual.
   */
+  renderAppChips();
   startSnowFX();
 });
 </script>
