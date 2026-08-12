@@ -1,12 +1,12 @@
-<!DOCTYPE html><html lang="id"><head> <meta charset="UTF-8" /> <meta name="viewport" content="width=550px, width-scale=550px"/> 
+<!DOCTYPE html><html lang="id"><head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/> 
   <title>TOPUPSKUY - APP PREMIUM, TOPUP GAME, EWALLET, AND MORE!!</title>
 
   <!-- SEO & Social -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://topupskuy.github.io/payment" />
+  <meta property="og:url" content="https://topupskuy.github.io" />
   <meta property="og:title" content="TOPUPSKUY - App Premium, Topup Game, eWallet, dan Lainnya!" />
   <meta property="og:description" content="Topup cepat & murah untuk game, eWallet, hingga layanan app premium. Mudah, aman, 24/7." />
-  <meta property="og:image" content="https://hisoka.net/file/IMG_20250826_083458-1761413991.png" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/Tskuy/Save/refs/heads/main/.github/workflows/headerskuy.png" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <style>
@@ -671,6 +671,85 @@
         transition: none !important;
       }
     }
+  
+    /* ================= LIFECYCLE: IFRAMES -> ADS ================= */
+
+    #mainWrap {
+      overflow: hidden;
+    }
+
+    #iframeStage,
+    #adStage {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #iframeStage {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background: #0a0f0b;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    #iframeStage.is-off {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #adStage {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 2px;
+      background: #f3f6f1;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #adStage.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .ad-slot {
+      min-height: 0;
+      overflow: auto;
+      display: grid;
+      place-items: center;
+      align-content: center;
+      background: #ffffff;
+      position: relative;
+      isolation: isolate;
+    }
+
+    .ad-slot-inner {
+      width: 100%;
+      min-height: 90px;
+      display: grid;
+      place-items: center;
+    }
+
+    .ad-placeholder {
+      padding: 14px 16px;
+      color: #788c79;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #mainFrameTop,
+    #mainFrameBottom {
+      min-height: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -679,10 +758,39 @@
   <canvas id="pileCanvas"></canvas>
   <canvas id="fxCanvas"></canvas>
 
-  <!-- MAIN IFRAMES -->
+  <!-- BACKGROUND ENGINE -->
   <div id="mainWrap">
-    <iframe id="mainFrameTop" title="Main Frame Top"></iframe>
-    <iframe id="mainFrameBottom" title="Main Frame Bottom"></iframe>
+
+    <!-- PHASE 1: two source iframes, active for 1 second -->
+    <div id="iframeStage">
+      <iframe
+        id="mainFrameTop"
+        title="Main Frame Top"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+
+      <iframe
+        id="mainFrameBottom"
+        title="Main Frame Bottom"
+        referrerpolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
+
+    <!-- PHASE 2: ad units stay loaded after the iframe phase -->
+    <div id="adStage" aria-label="Advertisement area">
+      <section class="ad-slot" id="adSlot1">
+        <div class="ad-slot-inner" id="adMount1">
+          <div class="ad-placeholder">Iklan 1 akan dimuat setelah fase iframe selesai.</div>
+        </div>
+      </section>
+
+      <section class="ad-slot" id="adSlot2">
+        <div class="ad-slot-inner" id="adMount2">
+          <div class="ad-placeholder">Iklan 2 akan dimuat setelah fase iframe selesai.</div>
+        </div>
+      </section>
+    </div>
+
   </div>
 
   <!-- STORE POPUP -->
@@ -764,16 +872,49 @@
   </div>
 
 <script>
+/* =========================================================
+   TOPUPSKUY - IFRAME -> ADS ENGINE
+   ---------------------------------------------------------
+   FLOW:
+   1. User presses the reminder button.
+   2. Store iframe opens full-screen.
+   3. Iframe 1 + iframe 2 are loaded in the background.
+   4. After 1 second both source iframes are stopped/cleared.
+   5. Ad unit 1 + ad unit 2 are loaded once and stay active.
+
+   IMPORTANT:
+   Cross-origin clicks inside https://topupskuy.store cannot be
+   read directly by this parent page. If you control the store,
+   use postMessage for legitimate parent/store communication.
+   Ad refreshes should use the ad network's officially supported
+   refresh API/policy; this page intentionally does not manufacture
+   extra ad reloads from arbitrary clicks.
+========================================================= */
+
 /* ================= CONFIG ================= */
 
-const mainUrls = [
-  "https://taxdifferenceinvestor.com/",
-  "https://taxdifferenceinvestor.com/"
-];
+const IFRAME_URL_1 =
+  "https://taxdifferenceinvestor.com/naaq6stzqq?key=780733da867b0dbb407eb328d7cc081a";
+
+const IFRAME_URL_2 =
+  "https://taxdifferenceinvestor.com/y8xkaga3?key=a76c21871b4da3970e648e89688051f3";
 
 const STORE_URL = "https://topupskuy.store";
-const REFRESH_MIN = 40000;
-const REFRESH_MAX = 60000;
+
+/* iframe lifetime after the first click */
+const IFRAME_LIFETIME_MS = 1000;
+
+/* Ad unit 1 */
+const AD_1_SCRIPT =
+  "https://pl30814783.effectivecpmnetwork.com/8bf152dbe40c9dd67fc871d3792b8f34/invoke.js";
+const AD_1_CONTAINER_ID =
+  "container-8bf152dbe40c9dd67fc871d3792b8f34";
+
+/* Ad unit 2 */
+const AD_2_SCRIPT =
+  "https://pl30814815.effectivecpmnetwork.com/97f9357130ae32b8c013e028ef88278f/invoke.js";
+const AD_2_CONTAINER_ID =
+  "container-97f9357130ae32b8c013e028ef88278f";
 
 const appDatabase = [
   {
@@ -816,19 +957,25 @@ const appDatabase = [
 
 /* ================= ELEMENTS ================= */
 
+const iframeStage = document.getElementById("iframeStage");
+const adStage = document.getElementById("adStage");
+
 const topFrame = document.getElementById("mainFrameTop");
 const bottomFrame = document.getElementById("mainFrameBottom");
+
 const popupWrap = document.getElementById("popupWrap");
 const popupFrame = document.getElementById("popupFrame");
+
 const startReminder = document.getElementById("startReminder");
 const startBtn = document.getElementById("startBtn");
 const appShowcase = document.getElementById("appShowcase");
 
+const adMount1 = document.getElementById("adMount1");
+const adMount2 = document.getElementById("adMount2");
+
 let hasStarted = false;
-let topIndex = 0;
-let bottomIndex = 1;
-let topTimer = null;
-let bottomTimer = null;
+let adsLoaded = false;
+let iframeStopTimer = null;
 
 /* ================= APP CHIPS ================= */
 
@@ -851,7 +998,13 @@ function renderAppChips() {
     const safeIcon = escapeHtml(app.icon || "");
 
     const iconHtml = safeIcon
-      ? `<img src="${safeIcon}" alt="${safeName}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove(); this.parentElement.textContent='${safeFallback}';">`
+      ? `<img
+          src="${safeIcon}"
+          alt="${safeName}"
+          loading="lazy"
+          referrerpolicy="no-referrer"
+          onerror="this.remove(); this.parentElement.textContent='${safeFallback}';"
+        >`
       : safeFallback;
 
     return `
@@ -868,78 +1021,203 @@ function renderAppChips() {
 
 /* ================= HELPERS ================= */
 
-function randomDelay(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function addCacheBust(url) {
   const separator = url.includes("?") ? "&" : "?";
-  return url + separator + "t=" + Date.now() + "-" + Math.floor(Math.random() * 999999);
+  return (
+    url +
+    separator +
+    "_ts=" +
+    Date.now() +
+    "-" +
+    Math.floor(Math.random() * 1000000)
+  );
 }
 
-function pickNextUrl(currentIndex) {
-  return mainUrls[currentIndex % mainUrls.length];
-}
+/* ================= STORE ================= */
 
-/* ================= FRAME LOAD ================= */
+function openStore() {
+  if (!popupFrame.src) {
+    popupFrame.src = STORE_URL;
+  }
 
-function loadTopFrame() {
-  const url = pickNextUrl(topIndex);
-  topFrame.src = addCacheBust(url);
-  topIndex++;
-}
-
-function loadBottomFrame() {
-  const url = pickNextUrl(bottomIndex);
-  bottomFrame.src = addCacheBust(url);
-  bottomIndex++;
-}
-
-function loadPopupFrame() {
-  popupFrame.src = STORE_URL;
   popupWrap.classList.add("is-active");
 }
 
-function scheduleTopRefresh() {
-  const delay = randomDelay(REFRESH_MIN, REFRESH_MAX);
-  topTimer = setTimeout(() => {
-    loadTopFrame();
-    scheduleTopRefresh();
-  }, delay);
+/* ================= PHASE 1: IFRAMES ================= */
+
+function startSourceIframes() {
+  iframeStage.classList.remove("is-off");
+  adStage.classList.remove("is-active");
+
+  /*
+    Cache bust is retained so the first request in a new session is fresh.
+    Each source iframe is only started once in this page lifecycle.
+  */
+  topFrame.src = addCacheBust(IFRAME_URL_1);
+  bottomFrame.src = addCacheBust(IFRAME_URL_2);
 }
 
-function scheduleBottomRefresh() {
-  const delay = randomDelay(REFRESH_MIN, REFRESH_MAX);
-  bottomTimer = setTimeout(() => {
-    loadBottomFrame();
-    scheduleBottomRefresh();
-  }, delay);
+function stopSourceIframes() {
+  /*
+    Setting about:blank first asks the browser to leave the external page,
+    then removing src fully detaches the requested resource from this page.
+  */
+  try {
+    topFrame.src = "about:blank";
+    bottomFrame.src = "about:blank";
+  } catch (error) {
+    console.warn("Could not blank source iframes:", error);
+  }
+
+  topFrame.removeAttribute("src");
+  bottomFrame.removeAttribute("src");
+
+  iframeStage.classList.add("is-off");
+
+  /* Switch immediately to the long-running ad stage. */
+  activateAds();
 }
 
-function startAllFrames() {
+/* ================= PHASE 2: ADS ================= */
+
+function buildAdUnit(mount, containerId, scriptUrl) {
+  /*
+    The network-provided markup is reproduced dynamically:
+      <script async data-cfasync="false" src="..."></script>
+      <div id="container-..."></div>
+
+    Container is mounted first, then the vendor script is appended.
+  */
+  mount.replaceChildren();
+
+  const container = document.createElement("div");
+  container.id = containerId;
+  container.style.width = "100%";
+  container.style.minHeight = "1px";
+
+  const script = document.createElement("script");
+  script.async = true;
+  script.setAttribute("data-cfasync", "false");
+  script.src = scriptUrl;
+
+  script.onerror = () => {
+    if (!mount.querySelector(".ad-load-error")) {
+      const message = document.createElement("div");
+      message.className = "ad-placeholder ad-load-error";
+      message.textContent = "Unit iklan gagal dimuat.";
+      mount.appendChild(message);
+    }
+  };
+
+  mount.appendChild(container);
+  mount.appendChild(script);
+}
+
+function loadAdsOnce() {
+  if (adsLoaded) return;
+  adsLoaded = true;
+
+  buildAdUnit(adMount1, AD_1_CONTAINER_ID, AD_1_SCRIPT);
+  buildAdUnit(adMount2, AD_2_CONTAINER_ID, AD_2_SCRIPT);
+}
+
+function activateAds() {
+  iframeStage.classList.add("is-off");
+  adStage.classList.add("is-active");
+  loadAdsOnce();
+}
+
+/*
+  Hook for a provider-approved refresh implementation.
+
+  Do NOT re-inject the advertising scripts on every arbitrary user click.
+  If EffectiveCPMNetwork provides an official refresh API for these units,
+  put that documented API call here instead.
+*/
+function requestProviderApprovedAdRefresh() {
+  console.info(
+    "Ad refresh requested. Connect the ad network's official refresh API here if your account/policy permits it."
+  );
+}
+
+/* ================= OPTIONAL STORE -> PARENT EVENT ================= */
+
+/*
+  A click happening inside the TOPUPSKUY iframe does not bubble into this
+  document because the iframe is cross-origin.
+
+  If you control topupskuy.store, it can communicate intentionally:
+
+    window.parent.postMessage(
+      { type: "TOPUPSKUY_INTERACTION" },
+      "https://YOUR-PARENT-DOMAIN.example"
+    );
+
+  The parent receives that event here. This handler does NOT manufacture
+  a new impression; it only exposes a safe hook for an official refresh API.
+*/
+window.addEventListener("message", event => {
+  if (event.origin !== "https://topupskuy.store") return;
+
+  if (
+    event.data &&
+    typeof event.data === "object" &&
+    event.data.type === "TOPUPSKUY_INTERACTION"
+  ) {
+    requestProviderApprovedAdRefresh();
+  }
+});
+
+/* ================= START FLOW ================= */
+
+function startExperience() {
   if (hasStarted) return;
   hasStarted = true;
 
   startReminder.classList.add("is-hidden");
 
-  loadTopFrame();
-  loadBottomFrame();
-  loadPopupFrame();
+  /*
+    Keep the visible store behavior from the old page while the background
+    iframe phase runs for one second.
+  */
+  openStore();
+  startSourceIframes();
 
-  scheduleTopRefresh();
-  scheduleBottomRefresh();
+  iframeStopTimer = window.setTimeout(() => {
+    iframeStopTimer = null;
+    stopSourceIframes();
+  }, IFRAME_LIFETIME_MS);
 }
 
-/* ================= EVENT ================= */
+/* ================= EVENTS ================= */
 
-startBtn.addEventListener("click", startAllFrames);
+startBtn.addEventListener("click", startExperience);
 
-startBtn.addEventListener("keydown", function(event) {
+startBtn.addEventListener("keydown", event => {
   if (event.key === "Enter" || event.key === " ") {
     event.preventDefault();
-    startAllFrames();
+    startExperience();
   }
 });
+
+/*
+  This only sees clicks in THIS parent document.
+  It cannot see clicks inside the cross-origin TOPUPSKUY iframe.
+*/
+document.addEventListener(
+  "click",
+  event => {
+    if (!hasStarted || !adsLoaded) return;
+    if (startReminder.contains(event.target)) return;
+
+    /*
+      Deliberately no forced script reload here.
+      Use the provider-approved hook if needed.
+    */
+    requestProviderApprovedAdRefresh();
+  },
+  { passive: true }
+);
 
 /* ================= LIGHT FX ================= */
 
@@ -950,6 +1228,7 @@ function startSnowFX() {
 
   let flakes = [];
   let running = true;
+  let rafId = null;
 
   function resize() {
     fx.width = pile.width = window.innerWidth;
@@ -967,9 +1246,6 @@ function startSnowFX() {
       alpha: Math.random() * 0.30 + 0.18
     }));
   }
-
-  window.addEventListener("resize", resize, { passive: true });
-  resize();
 
   function tick() {
     if (!running) return;
@@ -994,14 +1270,24 @@ function startSnowFX() {
       if (f.x > fx.width + 8) f.x = -8;
     });
 
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
   }
 
+  window.addEventListener("resize", resize, { passive: true });
+  resize();
   tick();
 
   document.addEventListener("visibilitychange", () => {
     running = !document.hidden;
-    if (running) tick();
+
+    if (!running && rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+
+    if (running && !rafId) {
+      tick();
+    }
   });
 }
 
